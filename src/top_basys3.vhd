@@ -11,7 +11,7 @@
 --| ---------------------------------------------------------------------------
 --|
 --| FILENAME      : top_basys3.vhd
---| AUTHOR(S)     : Capt Phillip Warner
+--| AUTHOR(S)     : Putter Kamolprabha
 --| CREATED       : 02/22/2018 Modified: 03/01/2020 by capt Dan Johnson
 --| DESCRIPTION   : This file implements the top level module for the solution for Stoplight FSM.
 --|
@@ -70,7 +70,17 @@ end top_basys3;
 architecture top_basys3_arch of top_basys3 is 
 
 --Declare stoplight component here 
-
+component stoplight_fsm is 
+    port(
+        i_C     : in std_logic; 
+        i_reset : in std_logic;
+        i_clk   : in std_logic;
+        o_R     : out std_logic;
+        o_Y     : out std_logic;
+        o_G     : out std_logic
+    ); 
+        
+end component stoplight_fsm; 
 
 component clock_divider is
 	generic ( constant k_DIV : natural := 2	);
@@ -85,15 +95,24 @@ end component clock_divider;
 begin
 	-- PORT MAPS ----------------------------------------
 	--Port map stoplight here based on the design provided
+	stoplight_unit: stoplight_fsm
+	   port map(
+	       i_C => sw(0),
+	       i_reset => btnC, 
+	       i_clk => w_clk, 
+	       o_R => JA(2), 
+	       o_Y => JA(1), 
+	       o_G => JA(0)
+	   ); 
 
 
 --Complete the clock_divider portmap below based on the design provided	
 	clkdiv_inst : clock_divider 		--instantiation of clock_divider to take 
         generic map ( k_DIV => 50000000 ) -- 1 Hz clock from 100 MHz
         port map (						  
-            i_clk   => 
-            i_reset => 
-            o_clk   => 
+            i_clk   => clk,
+            i_reset => btnL, 
+            o_clk   => w_clk
         );    
 	
 end top_basys3_arch;
